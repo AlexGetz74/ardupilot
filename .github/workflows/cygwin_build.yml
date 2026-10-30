@@ -158,9 +158,10 @@ jobs:
 
       - uses: cygwin/cygwin-install-action@v6
         with:
-          packages: cygwin64 gcc-g++=10.2.0-1 ccache python37 python37-future python37-lxml python37-pip python37-setuptools python37-wheel git procps gettext
+          packages: cygwin64 gcc-g++ ccache python39 python39-pip python39-setuptools python39-wheel python39-future python39-lxml git procps gettext
           install-dir: 'C:\cygwin'
           add-to-path: false
+
       # Put ccache into github cache for faster build
       - name: setup ccache
         env:
@@ -189,14 +190,19 @@ jobs:
           PATH: /usr/bin:$(cygpath ${SYSTEMROOT})/system32
         shell: C:\cygwin\bin\bash.exe -eo pipefail '{0}'
         run: >-
-          ln -sf /usr/bin/python3.7 /usr/bin/python && ln -sf /usr/bin/pip3.7 /usr/bin/pip &&
-          python3 -m pip install --progress-bar off empy==3.3.4 pexpect &&
-          python3 -m pip install --progress-bar off dronecan --upgrade &&
+          test -x /usr/bin/python3.9 &&
+          ln -sf /usr/bin/python3.9 /usr/bin/python &&
+          ln -sf /usr/bin/pip3.9 /usr/bin/pip &&
+          python --version &&
+          python -m pip install --progress-bar off empy==3.3.4 pexpect &&
+          python -m pip install --progress-bar off dronecan --upgrade &&
           cp /usr/bin/ccache /usr/local/bin/ &&
-          cd /usr/local/bin && ln -s ccache /usr/local/bin/gcc &&
+          cd /usr/local/bin &&
+          ln -s ccache /usr/local/bin/gcc &&
           ln -s ccache /usr/local/bin/g++ &&
           ln -s ccache /usr/local/bin/x86_64-pc-cygwin-gcc &&
           ln -s ccache /usr/local/bin/x86_64-pc-cygwin-g++
+
 
       - name: Build SITL
         env:
